@@ -68,7 +68,16 @@ get_method_selector :: proc(name: cstring) -> sel ---;
 */
 @(link_name="class_getMethodImplementation")
 get_function_from_class :: proc(class_obj: class, selector: sel) -> imp ---;
+
+/* 
+	TODO(platin): add the rest of the calls! 
+*/
+
 }
+
+/*===========================================================================================*
+	CUSTOM OVERLOADS 
+ *===========================================================================================*/
 
 /*
 	Gets the c function pointer from the objc class but with a name for the method
@@ -91,3 +100,7 @@ get_function_from_class_with_name :: proc(class_obj: class, method_name: cstring
 get_function :: proc(class_name: cstring, method_name: cstring) -> imp {
 	return get_function_from_class(get_class(class_name), get_method_selector(method_name));
 }
+
+/*
+	@INFO(platin): There are more methods but we don't need them. todo all the things we want.
+*/

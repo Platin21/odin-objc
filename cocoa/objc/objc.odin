@@ -20,8 +20,16 @@ foreign objc {
 @(link_name="objc_msgSend")
 call_method :: proc(instance: id, selector: sel, #c_vararg args: ..any) -> id ---;
 
+/* 
+	Calls a method that is static from a class 
+	
+	- Parameter instance: the instance of the class you want to call this on
+	- Parameter selector: the selector for the method you want to call
+	- Parameter args: the arguments that the method needs addtionaly 
+	- Retunrs: a id or a object on the stack which is the result of the method you called
+*/
 @(link_name="objc_msgSend")
-call_static_method :: proc(instance: class, selector: sel, #c_vararg args: ..any) -> id ---;
+call_static_method :: proc(class_obj: class, selector: sel, #c_vararg args: ..any) -> id ---;
 
 /*
 	Gets the runtime class from objc 

@@ -1,5 +1,5 @@
 package objc;
-foreign import objc "../../../../../../../usr/lib/libobjc.A.dylib"
+foreign import objc "system:objc"
 
 id    :: opaque rawptr;
 class :: opaque rawptr;

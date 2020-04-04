@@ -1,10 +1,13 @@
 package objc;
 
+import "core:c"
+import "core:mem"
+
 // type overloads
 id    :: opaque rawptr;
 class :: opaque rawptr;
 sel   :: opaque rawptr;
-imp   :: #type proc "c" (obj_id: id , sel: sel, #c_vararg args: ..any) -> id;  
+imp   :: #type proc "c" (obj_id: id , sel: sel, args: u8) -> id;   
 
 /*
 	Some addtional information about type encoding:
@@ -63,18 +66,7 @@ foreign objc {
 		- Returns: a id or a object on the stack which is the result of the method you called
 */
 @(link_name="objc_msgSend")
-call_method :: proc(instance: id, selector: sel, #c_vararg args: ..any) -> id ---;
-
-/* 
-	Calls a method that is static from a class 
-	
-	- Parameter instance: the instance of the class you want to call this on
-	- Parameter selector: the selector for the method you want to call
-	- Parameter args: the arguments that the method needs addtionaly 
-	- Retunrs: a id or a object on the stack which is the result of the method you called
-*/
-@(link_name="objc_msgSend")
-call_static_method :: proc(class_obj: class, selector: sel, #c_vararg args: ..any) -> id ---;
+call_method :: proc(all: rawptr) -> id ---;
 
 /*===========================================================================================*
 	Selector functions  
@@ -99,6 +91,15 @@ get_constant_method_selector :: proc(name: cstring) -> sel ---;
 @(link_name="sel_registerName")
 get_method_selector :: proc(name: cstring) -> sel ---;
 
+/*
+  This method gives you the name of a selector as cstring
+
+  - Parameter selector: the selector from which you want the name
+  - Returns: cstring the name of the selector
+*/
+@(link_name="sel_getName") 
+get_selector_name :: proc(selector: sel) -> cstring ---;
+
 /*===========================================================================================*
 	Class Runtime Functions 
  *===========================================================================================*/
@@ -111,6 +112,22 @@ get_method_selector :: proc(name: cstring) -> sel ---;
 */
 @(link_name="objc_getClass")
 get_class :: proc(className: cstring) -> class ---;
+
+/*
+  Gets a list of all defined classes of the current process
+
+  - Parameter buffer: on this location the classes that are avaialble will be stored 
+                      if you just want to retrive the size pass here a nil and it will return   
+                      the count of defined classes 
+
+  - Parameter buffer_count: the count of empty objc.classes that will be filled if there are less
+                            classes in the current process than the amount you passed the only the 
+                            defined amount of classes will be filled in the buffer array
+
+  - Returns: int indicating the total number of registered classes
+*/
+@(link_name="objc_getClassList")
+get_class_list :: proc(buffer: ^class, buffer_count: c.int) -> c.int ---;
 
 /*
 	Gets the name of a class as cstring
@@ -128,7 +145,7 @@ get_class_name :: proc(class_obj: class) -> cstring ---;
 	- Returns: class that is the super of the class_obj
 */
 @(link_name="class_getSuperclass") 
-get_super_class_of_class :: proc(class_obj: class) -> Class ---;
+get_super_class_of_class :: proc(class_obj: class) -> class ---;
 
 /*
 	Checks if the class is a meta class 
@@ -148,7 +165,7 @@ is_metaclass :: proc(class_obj: class) -> bool ---;
 @(link_name="class_getInstanceSize")
 get_size_of_class :: proc(class_obj: class) -> u32 ---;
 
-@(link_name="class_getInstanceVaribale")
+@(link_name="class_getInstanceVariable")
 get_static_variable_from_class :: proc (class_obj: class, name: cstring) -> ivar ---;
 
 @(link_name="class_getClassVariable")
@@ -179,7 +196,7 @@ create_instance_of_class :: proc(class_obj: class, extra_bytes: c.int) -> id ---
 	
 	- Parameter class_obj: the objc class you want to create
 	- Parameter bytes: the place where you want to create it
-	- Returns id: instance of the class
+	- Returns: id instance of the class
 */
 @(link_name="objc_constructInstance")
 construct_class :: proc(class_obj: class, bytes: rawptr) -> id ---;
@@ -188,10 +205,17 @@ construct_class :: proc(class_obj: class, bytes: rawptr) -> id ---;
 	In place destroys a instance of a class and unregisters it in the runtime 
 	
 	- Parameter obj: the object you want to destruct
-	- Returns rawptr: the pointer to the memory where the class was
+	- Returns: rawptr the pointer to the memory where the class was
 */
 @(link_name="objc_destructInstance")
 destruct_class :: proc(obj: id) -> rawptr ---;
+
+/*
+  - Parameter sel: the selector from which you want the name
+  - Returns: cstring the name of the method the the selector describes
+*/
+@(link_name="method_getName") 
+methode_get_name :: proc(selector: sel) -> cstring ---;
 
 /* 
 	TODO(platin): add the rest of the calls! (there might be some objects duplicated here)
@@ -203,13 +227,13 @@ destruct_class :: proc(obj: id) -> rawptr ---;
   object_getIndexdIvars
   object_getIvar
   object_setIvar
-  object_getClassName
+  object_getClassName*
   object_getClass
 	object_setClass
-  objc_getClassList
+  objc_getClassList*
 	objc_copyClassList
   objc_lookUpClass
-  objc_getClass
+  objc_getClass*
 	objc_getRequiredClass 
   objc_getMetaClass
   objc_setAssociatedObject
@@ -245,9 +269,9 @@ destruct_class :: proc(obj: id) -> rawptr ---;
 
 	class_getImageName
 	
-	sel_getName
-	sel_registerName
-	sel_getUid
+	sel_getName+
+	sel_registerName+
+	sel_getUid+
 	sel_isEqual
 
 	protocol_addMethodDescription
@@ -274,22 +298,22 @@ destruct_class :: proc(obj: id) -> rawptr ---;
 	CUSTOM OVERLOADS 
  *===========================================================================================*/
 
-create_class_instance :: proc(class_obj: class) -> id {
+create_class_instance :: proc(class_obj: class, allocator := context.allocator) -> id {
 	class_size := get_size_of_class(class_obj);
-	instance_memory := context.alloc(class_size);
-	return construct_class(class, instance_memory);
+	instance_memory : rawptr = mem.alloc(size=int(class_size),allocator=allocator);
+	return construct_class(class_obj, instance_memory);
 }
 
-create_class_with_name :: proc(class_name: cstring) -> id {
+create_class_with_name :: proc(class_name: cstring, allocator := context.allocator) -> id {
 	objc_class := get_class(class_name);
-	class_size := get_size_of_class(class_obj);
-	instance_memory := context.alloc(class_size);
-	return construct_class(class, instance_memory);
+	class_size := get_size_of_class(objc_class);
+	instance_memory : rawptr = mem.alloc(size=int(class_size),allocator=allocator);
+	return construct_class(objc_class, instance_memory);
 }
 
-destroy_class_instance :: proc(obj: id) {
-	instance_memory := destruct_class(id);
-	context.free(instance_memory);
+destroy_class_instance :: proc(obj: id, allocator := context.allocator) {
+	instance_memory := destruct_class(obj);
+	free(instance_memory, allocator);
 }
 
 /*

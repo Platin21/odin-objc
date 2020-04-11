@@ -165,9 +165,11 @@ is_metaclass :: proc(class_obj: class) -> bool ---;
 @(link_name="class_getInstanceSize")
 get_size_of_class :: proc(class_obj: class) -> u32 ---;
 
+//@TODO(Platin): Add a description what it really does??
 @(link_name="class_getInstanceVariable")
 get_static_variable_from_class :: proc (class_obj: class, name: cstring) -> ivar ---;
 
+//@TODO(Platin): Add a description what it really does??
 @(link_name="class_getClassVariable")
 get_variable_from_class :: proc(class_obj : class, name : cstring) -> ivar ---;
 

@@ -129,7 +129,7 @@ foreign core_foundation {
      result of malloc() type functions.
   */
   @(link_name="kCFAllocatorMalloc")
-  kCFAllocatorMalloc : Cf_Allocator_Ref;
+  Allocator_Malloc : Cf_Allocator_Ref;
 
   /* This allocator explicitly uses the default malloc zone, returned by
      malloc_default_zone(). It should only be used when an object is
@@ -158,7 +158,7 @@ foreign core_foundation {
  *===========================================================================================*/
 
 new_cfstring :: proc(odin_string: string) -> Cf_String {
-  return cf_string_create_with_bytes(kCFAllocatorMalloc, strings.ptr_from_string(odin_string), cast(Cf_Index)len(odin_string), .Utf8, 0);
+  return cf_string_create_with_bytes(Allocator_Malloc, strings.ptr_from_string(odin_string), cast(Cf_Index)len(odin_string), .Utf8, 0);
 }
 
 count :: proc(cf_string: Cf_String, encoding := Cf_String_Encoding.Utf8) -> u64 {

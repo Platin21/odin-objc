@@ -248,3 +248,50 @@ foreign core_foundation {
  CFArrayAppendArray             :: proc(theArray: CFMutableArrayRef, otherArray: CFArrayRef, otherRange: CFRange) ---;
 
 }
+
+/*===========================================================================================*
+	CFArray helpers
+ *===========================================================================================*/
+
+CFArrayGetFirstIndexOfTypedValue :: proc(theArray: CFArrayRef, range: CFRange, value: $T) -> CFIndex {
+  return CFArrayGetFirstIndexOfValue(theArray, range, cast(^rawptr)value);
+};
+
+CFArrayGetLastIndexOfTypedValue :: proc(theArray: CFArrayRef, range: CFRange, value: $T) -> CFIndex { 
+  return CFArrayGetLastIndexOfValue(theArray, range, cast(rawptr)value);
+};
+
+CFArrayBSearchTypedValues :: proc(theArray: CFArrayRef, range: CFRange, value: rawptr, comparator: CFComparatorFunction, ctx: rawptr) -> CFIndex { 
+  return CFArrayBSearchValues(theArray, range, cast(rawptr)value, comparator, ctx);
+};
+
+CFArrayAppendTypedValue :: proc(theArray: CFMutableArrayRef, value: $T) {
+  CFArrayAppendValue(theArray, value);
+};
+
+CFArrayInsertValueAtIndexTyped :: proc(theArray: CFMutableArrayRef, idx: CFIndex, value: $T) {
+  CFArrayInsertValueAtIndex(theArray, idx, cast(rawptr)value);
+};
+
+CFArraySetValueAtIndexTyped :: proc(theArray: CFMutableArrayRef, idx: CFIndex, value: $T) {
+  CFArraySetValueAtIndex(theArray, idx, cast(rawptr)value);
+};
+  
+CFArrayCreateTyped :: proc(values: []$T) -> CFArrayRef {
+  return CFArrayCreate(kCFAllocatorMalloc, cast(^rawptr)&values[0], CFIndex(len(values)), &kCFTypeArrayCallBacks);
+};
+
+CFMutableArrayCreateTyped :: proc(values: []$T) -> CFMutableArrayRef {
+  cfMutableArray := CFArrayCreateMutable(kCFAllocatorMalloc, CFIndex(len(values)), &kCFTypeArrayCallBacks);
+  for it := 0; it < len(values); it += 1 {
+      CFArrayAppendTypedValue(cfMutableArray, values[it]);
+      CFRelease(cast(CFType)values[it]);
+  }
+  return cfMutableArray;
+};
+ 
+
+
+
+
+

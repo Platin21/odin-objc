@@ -48,8 +48,11 @@ CFOptionFlags      :: distinct u64;
 CFHashCode         :: distinct u64;
 CFIndex            :: distinct i64;
 CFAllocatorRef     :: distinct rawptr;
+
 CFStringRef        :: distinct rawptr;
-CFMutableStringRef :: distinct rawptr;
+CFMutableStringRef :: distinct CFStringRef;
+
+
 CFTypeRef          :: CFType;
 
 /*===========================================================================================*

@@ -1,6 +1,5 @@
 package appkit;
 
-import "core:fmt"
 import "cocoa:objc"
 import "cocoa:foundation"
 

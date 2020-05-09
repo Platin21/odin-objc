@@ -65,8 +65,7 @@ foreign objc {
 		- Parameter args: the arguments that the method needs addtionaly 
 		- Returns: a id or a object on the stack which is the result of the method you called
 */
-@(link_name="objc_msgSend")
-call_method :: proc(all: rawptr) -> id ---;
+objc_msgSend :: proc(all: rawptr) -> id ---;
 
 /*===========================================================================================*
 	Selector functions  
@@ -79,8 +78,7 @@ call_method :: proc(all: rawptr) -> id ---;
 	- Parameter name: is the name of the method
 	- Returns: the selector for the method
 */
-@(link_name="sel_getUid")
-get_constant_method_selector :: proc(name: cstring) -> sel ---;
+sel_getUid :: proc(name: cstring) -> sel ---;
 
 /*
 	Gets the selector of a specific method from the objc runtime 
@@ -88,8 +86,7 @@ get_constant_method_selector :: proc(name: cstring) -> sel ---;
 	- Parameter name: the cstring that is the name of the method
 	- Returns: the selector for the method
 */
-@(link_name="sel_registerName")
-get_method_selector :: proc(name: cstring) -> sel ---;
+sel_registerName :: proc(name: cstring) -> sel ---;
 
 /*
   This method gives you the name of a selector as cstring
@@ -97,8 +94,7 @@ get_method_selector :: proc(name: cstring) -> sel ---;
   - Parameter selector: the selector from which you want the name
   - Returns: cstring the name of the selector
 */
-@(link_name="sel_getName") 
-get_selector_name :: proc(selector: sel) -> cstring ---;
+sel_getName :: proc(selector: sel) -> cstring ---;
 
 /*===========================================================================================*
 	Class Runtime Functions 
@@ -110,8 +106,7 @@ get_selector_name :: proc(selector: sel) -> cstring ---;
 	- Parameter className: the name of the class
   - Returns: the class you requested from the runtime
 */
-@(link_name="objc_getClass")
-get_class :: proc(className: cstring) -> class ---;
+objc_getClass :: proc(className: cstring) -> class ---;
 
 /*
   Gets a list of all defined classes of the current process
@@ -126,8 +121,7 @@ get_class :: proc(className: cstring) -> class ---;
 
   - Returns: int indicating the total number of registered classes
 */
-@(link_name="objc_getClassList")
-get_class_list :: proc(buffer: ^class, buffer_count: c.int) -> c.int ---;
+objc_getClassList :: proc(buffer: ^class, buffer_count: c.int) -> c.int ---;
 
 /*
 	Gets the name of a class as cstring
@@ -135,8 +129,7 @@ get_class_list :: proc(buffer: ^class, buffer_count: c.int) -> c.int ---;
 	- Parameter class_obj: the class object from objc
 	- Returns: cstring that is the name of the object
 */
-@(link_name="class_getName") 
-get_class_name :: proc(class_obj: class) -> cstring ---;
+class_getName :: proc(class_obj: class) -> cstring ---;
 
 /*
 	Gets the super class of the class 
@@ -144,8 +137,7 @@ get_class_name :: proc(class_obj: class) -> cstring ---;
 	- Parameter class_obj: the class object from objc
 	- Returns: class that is the super of the class_obj
 */
-@(link_name="class_getSuperclass") 
-get_super_class_of_class :: proc(class_obj: class) -> class ---;
+class_getSuperclass :: proc(class_obj: class) -> class ---;
 
 /*
 	Checks if the class is a meta class 
@@ -153,8 +145,7 @@ get_super_class_of_class :: proc(class_obj: class) -> class ---;
 	- Parameter class_obj: the class object from objc
 	- Returns: true if the class is a metaclass false if it is not a metaclass
 */
-@(link_name="class_isMetaClass")
-is_metaclass :: proc(class_obj: class) -> bool ---;
+class_isMetaClass :: proc(class_obj: class) -> bool ---;
 
 /*
 	Gets the size of a objc class 
@@ -162,16 +153,13 @@ is_metaclass :: proc(class_obj: class) -> bool ---;
 	- Parameter class_obj: the class object from objc
 	- Returns: the size of a instance of the class 
 */
-@(link_name="class_getInstanceSize")
-get_size_of_class :: proc(class_obj: class) -> u32 ---;
+class_getInstanceSize :: proc(class_obj: class) -> u32 ---;
 
 //@TODO(Platin): Add a description what it really does??
-@(link_name="class_getInstanceVariable")
-get_static_variable_from_class :: proc (class_obj: class, name: cstring) -> ivar ---;
+class_getInstanceVariable :: proc (class_obj: class, name: cstring) -> ivar ---;
 
 //@TODO(Platin): Add a description what it really does??
-@(link_name="class_getClassVariable")
-get_variable_from_class :: proc(class_obj : class, name : cstring) -> ivar ---;
+class_getClassVariable :: proc(class_obj : class, name : cstring) -> ivar ---;
 
 /*
 	Gets the c function pointer from the objc class
@@ -180,8 +168,7 @@ get_variable_from_class :: proc(class_obj : class, name : cstring) -> ivar ---;
 	- Parameter selector: the selector which you want to get the c function for.
 	- Returns: objc imp aka the c funtion pointer
 */
-@(link_name="class_getMethodImplementation")
-get_function_from_class :: proc(class_obj: class, selector: sel) -> imp ---;
+class_getMethodImplementation :: proc(class_obj: class, selector: sel) -> imp ---;
 
 /*
 	Creates a instance of a class with the default heap allocator
@@ -190,8 +177,7 @@ get_function_from_class :: proc(class_obj: class, selector: sel) -> imp ---;
 	- Parameter extra_bytes: addtional bytes you may want for other stuff
 	- Returns: id instance of the class 
 */
-@(link_name="class_createInstance")
-create_instance_of_class :: proc(class_obj: class, extra_bytes: c.int) -> id ---;
+class_createInstance :: proc(class_obj: class, extra_bytes: c.int) -> id ---;
 
 /*
 	In place constructs a class and registers it in the runtime
@@ -200,8 +186,7 @@ create_instance_of_class :: proc(class_obj: class, extra_bytes: c.int) -> id ---
 	- Parameter bytes: the place where you want to create it
 	- Returns: id instance of the class
 */
-@(link_name="objc_constructInstance")
-construct_class :: proc(class_obj: class, bytes: rawptr) -> id ---;
+objc_constructInstance :: proc(class_obj: class, bytes: rawptr) -> id ---;
 
 /*
 	In place destroys a instance of a class and unregisters it in the runtime 
@@ -209,15 +194,13 @@ construct_class :: proc(class_obj: class, bytes: rawptr) -> id ---;
 	- Parameter obj: the object you want to destruct
 	- Returns: rawptr the pointer to the memory where the class was
 */
-@(link_name="objc_destructInstance")
-destruct_class :: proc(obj: id) -> rawptr ---;
+objc_destructInstance :: proc(obj: id) -> rawptr ---;
 
 /*
   - Parameter sel: the selector from which you want the name
   - Returns: cstring the name of the method the the selector describes
 */
-@(link_name="method_getName") 
-methode_get_name :: proc(selector: sel) -> cstring ---;
+method_getName :: proc(selector: sel) -> cstring ---;
 
 /* 
 	TODO(platin): add the rest of the calls! (there might be some objects duplicated here)

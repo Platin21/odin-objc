@@ -284,41 +284,31 @@ method_getName :: proc(selector: sel) -> cstring ---;
  *===========================================================================================*/
 
 create_class_instance :: proc(class_obj: class, allocator := context.allocator) -> id {
-	class_size := get_size_of_class(class_obj);
+	class_size := class_getInstanceSize(class_obj);
 	instance_memory : rawptr = mem.alloc(size=int(class_size),allocator=allocator);
-	return construct_class(class_obj, instance_memory);
+	return objc_constructInstance(class_obj, instance_memory);
 }
 
 create_class_with_name :: proc(class_name: cstring, allocator := context.allocator) -> id {
-	objc_class := get_class(class_name);
-	class_size := get_size_of_class(objc_class);
+	objc_class := objc_getClass(class_name);
+	class_size := class_getInstanceSize(objc_class);
 	instance_memory : rawptr = mem.alloc(size=int(class_size),allocator=allocator);
-	return construct_class(objc_class, instance_memory);
+	return objc_constructInstance(objc_class, instance_memory);
 }
 
 destroy_class_instance :: proc(obj: id, allocator := context.allocator) {
-	instance_memory := destruct_class(obj);
+	instance_memory := objc_destructInstance(obj);
 	free(instance_memory, allocator);
 }
-
-/*
-	Gets the c function pointer from the objc class but with a name for the method
-	
-	- Parameter class_obj: the class object from objc
-	- Parameter method_name: the name of the function that you want to get
-	- Returns: objc imp aka the c funtion pointer
-*/
-get_function_from_class_with_name :: proc(class_obj: class, method_name: cstring) -> imp {
-	return get_function_from_class(class_obj, get_method_selector(method_name));
+ 
+class_get_method_implementation_of_name :: proc(class_obj: class, method_name: cstring) -> imp {
+	return class_getMethodImplementation(class_obj, sel_registerName(method_name));
 }
 
-/*
-	Gets the c function pointer from the objc class name and that with a name for the method
-	
-	- Parameter class_obj: the class object from objc
-	- Parameter method_name: the name of the function that you want to get
-	- Returns: objc imp aka the c funtion pointer
-*/
-get_function :: proc(class_name: cstring, method_name: cstring) -> imp {
-	return get_function_from_class(get_class(class_name), get_method_selector(method_name));
+class_with_name_get_method_implementation_of_selector :: proc(class_name: cstring, method_sel: sel) -> imp {
+	return class_getMethodImplementation(objc_getClass(class_name), method_sel);
+}
+
+class_with_name_get_method_implementation_of_name :: proc(class_name: cstring, method_name: cstring) -> imp {
+	return class_getMethodImplementation(objc_getClass(class_name), sel_registerName(method_name));
 }

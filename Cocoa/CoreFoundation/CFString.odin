@@ -1,6 +1,7 @@
 package CoreFoundation;
 
 import "core:mem"
+import "core:strings"
 
 /*===========================================================================================*
 	Foreign import 
@@ -84,6 +85,10 @@ foreign core_foundation {
   CFStringCompare :: proc(theString1: CFStringRef, theString2: CFStringRef, compareOptions: CFStringCompareFlags) -> CFComparisonResult ---;
 }
 
+from_odin_string :: proc(odin_string: string, allocator := context.allocator) -> CFStringRef {
+  ptr := strings.ptr_from_string(odin_string);
+  return CFStringCreateWithBytes(kCFAllocatorDefault, ptr, CFIndex(len(odin_string)), .Utf8, 0);
+}
 
 to_odin_string :: proc(cf_string: CFStringRef, allocator := context.allocator) -> string {
   utf8_len : CFIndex = 0;

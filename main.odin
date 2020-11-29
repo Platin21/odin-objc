@@ -1,22 +1,50 @@
 package main
 
+import "core:c"
 import "core:fmt"
-import "cocoa:CoreFoundation"
+
+
+import "Cocoa:CoreFoundation"
+import "Cocoa:objc"
+
+
+CFNumberDescriptionWithLocale :: proc(number: CoreFoundation.CFNumberRef, locale: objc.id = nil) -> CoreFoundation.CFStringRef {
+  function :: proc(instance: objc.id, sel: objc.sel, locale: objc.id) -> CoreFoundation.CFStringRef;
+  
+  @thread_local objc_msg : function = {};
+  if objc_msg == nil {
+     objc_msg := cast(function)objc.class_with_name_get_method_implementation_of_name("NSNumber", "descriptionWithLocale:");
+  }
+ 
+  return objc_msg(cast(objc.id)number, nil, locale);
+}
+
+
+kern_return_t :: c.int;
+
+mach_timebase_info_type :: struct {
+  numer: u32,
+	denom: u32,
+};
+
+foreign {
+  mach_timebase_info :: proc(info: ^mach_timebase_info_type) -> kern_return_t ---;
+  mach_absolute_time :: proc() -> u64 ---;
+}
+
+ns_to_s :: proc(nanosecond: u64) -> u64 {
+  return nanosecond / 1000000000;
+}
+
+ns_to_ms :: proc(nanosecond: u64) -> u64 {
+  return nanosecond / 1000000;
+}
+
+ns_to_mc :: proc(nanosecond: u64) -> u64 {
+  return nanosecond / 1000;
+} 
 
 main :: proc() {
   using CoreFoundation;
-    
-  typed := CFMutableArrayCreateTyped(([]CFNumberRef){ CFNUM(1), CFNUM(2), CFNUM(3) });
-    
-  fmt.printf("Count of Typed array: {}\n", CFArrayGetCount(cast(CFArrayRef)typed));
-  fmt.printf("Value at index 0: {}\n", CFNumberGeti64(cast(CFNumberRef)CFArrayGetValueAtIndex(cast(CFArrayRef)typed, 0)));
-  fmt.printf("Value at index 1: {}\n", CFNumberGeti64(cast(CFNumberRef)CFArrayGetValueAtIndex(cast(CFArrayRef)typed, 1)));
-  fmt.printf("Value at index 2: {}\n", CFNumberGeti64(cast(CFNumberRef)CFArrayGetValueAtIndex(cast(CFArrayRef)typed, 2)));
-    
-  fmt.printf("Version: {}\n", kCFCoreFoundationVersionNumber);
   
-  value := CFNumberGeti64(cast(CFNumberRef)CFArrayGetValueAtIndex(cast(CFArrayRef)typed, 1));
-  fmt.printf("Value: {}\n", value);
-  
-  CFRelease(cast(CFType)typed);
 }

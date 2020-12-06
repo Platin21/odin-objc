@@ -13,6 +13,12 @@ On macOS no addtional library is required as the system.framework already includ
 
 For other systems (linux/bsd) you want to include the runtime library impl in order to make it work.
 
+If that is done one can just include it like that:
+```odin
+  import "<Collection Name>:objc"
+  import "shared:objc"
+```
+
 ### What's next? ###
 
 - Addition of usage examples (pure objc no external lib)
@@ -20,6 +26,7 @@ For other systems (linux/bsd) you want to include the runtime library impl in or
 - Addition of more complicated setups with external library's
 - Making a generic class/protocol builder for odin
 - Making a builder for blocks (unsure wether that is easy todo)
+- Seperating the runtime functions in to there own files (not sure if that makes sense)
 
 ### Licence ### 
 

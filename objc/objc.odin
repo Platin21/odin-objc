@@ -46,7 +46,7 @@ NO    :: false;
 	=> # = class
 	=> : = sel
 	=> [sizetype] = [S]T
-	=> {name=type..} = struct {type..}; /* name is optional! */
+	=> {name=type..} = struct {type..}; // name is optional!
 	=> (type..) = union 
 	=> b<num>   = bitfield of num bits
 	=> ^type    = pointer of T

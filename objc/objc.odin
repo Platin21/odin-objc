@@ -69,6 +69,25 @@ NO    :: false;
 
 ivar :: distinct object_ivar;
 
+AssociationPolicy :: enum uintptr {
+  
+  /* Specifies a weak reference to the associated object. */ 
+  OBJC_ASSOCIATION_ASSIGN = 0,
+  
+  /* Specifies a strong reference to the associated object, and that the association is not made atomically. */ 
+  OBJC_ASSOCIATION_RETAIN_NONATOMIC = 1,
+  
+  /* Specifies that the associated object is copied, and that the association is not made atomically. */ 
+  OBJC_ASSOCIATION_COPY_NONATOMIC = 3,
+  
+   /* Specifies that the associated object is copied, and that the association is made atomically. */ 
+  OBJC_ASSOCIATION_COPY = 01403,
+ 
+  /* Specifies a strong reference to the associated object, and that the association is made atomically. */
+  OBJC_ASSOCIATION_RETAIN = 01401
+}
+
+
 // foreign block
 foreign import objc "system:objc"
 @(default_calling_convention="c")
@@ -93,8 +112,141 @@ msgSend :: proc(all: rawptr) -> id ---;
 @(link_name="objc_msgSend_stret")
 msgSend_stret :: proc(ret: rawptr, all: rawptr) -> int ---;
 
+
+/*
+  Calls objc method that returns a structure from super class
+  - Note: This should never be use to call anything directly just cast it to the correct pointer
+  - Returns: a id or a value on the stack which is the result of the method you called
+*/
+@(link_name="objc_msgSendSuper_stret")
+msgSendSuper_stret :: proc(ret: rawptr, all: rawptr) -> int ---;
+
+/*
+  Calls objc method from the super class 
+  - Note: This should never be use to call anything directly just cast it to the correct pointer
+*/
+@(link_name="objc_msgSendSuper")
+msgSendSuper :: proc(all: rawptr) -> id ---;
+
+
+/*
+  Method that gives a list of classes in a certain lib
+  - Parameter image: the name of the library or framework 
+  - Parameter outCount: the amount of class names that where returned
+  - Returns: all class names of a given library or framework
+*/
+@(link_name="objc_copyClassNamesForImage")
+copyClassNamesForImage :: proc(image: cstring, outCount: ^u32) -> ^cstring;
+
+/*
+  Method that returns all names of dynamic libraries/frameworks with objc objects
+  - Parameter outCount: the amount of library/framework names that where returned
+*/
+@(link_name="objc_copyImageNames")
+copyImageNames :: proc(outCount: ^u32) -> ^cstring;
+
+
 /*===========================================================================================*
-	Selector functions  
+	Global Protocol 
+ *===========================================================================================*/
+
+/*
+  Registers a protocol so that it can be used by the objc runtime
+*/
+@(link_name="objc_registerProtocol")
+registerProtocol :: proc(proto: ^protocol) ---;
+
+/*
+  Allocates a new empty protocol 
+  - Returns: if the name already exists returns zero if not then a empty protocol
+*/
+@(link_name="objc_allocateProtocol")
+allocateProtocol :: proc(name: cstring) -> ^protocol ---;
+
+/*
+  Method to get runtime registerd protocols
+  - Parameter outCount: is used to define how many protocols are returned
+  - Returns: a copy of all currently registerd protocols 
+*/
+@(link_name="objc_copyProtocolList")
+copyProtocolList :: proc(outCount: ^u32) -> ^protocol ---;
+
+/*
+ Getter for protocols
+  - Returns: the protocol that is registerd in the runtime with the given name. Or zero if there is no such proto
+*/
+@(link_name="objc_getProtocol"");
+getProtocol :: proc(name: cstring) -> ^protocol ---;
+
+/*===========================================================================================*
+	Global objects 
+ *===========================================================================================*/
+
+/*
+  Used to remove associtations (properties that refer to other objects)
+  - Parameter object: the id of the object from which you want to remove the associates
+*/
+@(link_name="objc_removeAssociatedObjects")
+removeAssociatedObjects :: proc(object: id) ---;
+
+
+/*
+  Gets the assiociated object from a given key
+  - Parameter object: the object you want to get the assosiate of
+  - Parameter key: the thing that was used as key can be anything
+  - Returns: id/object of assosiate 
+*/
+@(link_name="objc_getAssociatedObject")
+getAssociatedObject :: proc(object: id, key: rawptr) -> id ----;
+
+
+/*
+  Adds assosiate to class instance (object)
+  - Parameter object: the object you want to set the assosiate of
+  - Parameter key: the thing that is used as key can be anything
+  - Parameter value: the assosiate
+  - Parameter policy: the constraints of the reletionship of the value
+*/
+@(link_name="objc_setAssociatedObject")
+setAssociatedObject :: proc(object: id, key: rawptr, value: id, policy: AssociationPolicy) ---;
+
+/*
+  Global classes
+*/
+
+/*
+  Returns the metaclass defintion of a given class by name
+  - Parameter name: the name of the class from where to get the meta class
+  - Returns: Metaclass for object if not existing it still returns but the value is then gabrage
+*/
+@(link_name="objc_getMetaClass")
+getMetaClass :: proc(name: cstring) -> id ---; 
+
+/*
+  Does the same as objc.getClass but if the class doesn't exists it kills the process
+*/
+@(link_name="objc_getRequiredClass")
+getRequiredClass :: proc(name: cstring) -> class ---;
+
+/*
+  Does the same as get class but doesn't lookup via registry callback
+*/
+@(link_name="objc_lookUpClass")
+lookUpClass :: proc(name: cstring) -> class ---;
+
+/*
+  
+  - Note: Classes need to be freed via free 
+  - Parameter outCount: the amount of classes that was retrived
+  - Returns: a null terminated array of classes
+*/
+@(link_name="objc_copyClassList")
+copyClassList :: proc(outCount: ^u32) -> ^class ---;
+
+
+
+/*===========================================================================================*
+	Selector
  *===========================================================================================*/
 
 /*
@@ -131,7 +283,7 @@ sel_getName :: proc(selector: sel) -> cstring ---;
 sel_isEqual :: proc(lhs: sel, rhs: sel) -> bool ---;
 
 /*===========================================================================================*
-	Class Runtime Functions 
+	class (at runtime)
  *===========================================================================================*/
 
 /*
@@ -157,7 +309,8 @@ getClass :: proc(className: cstring) -> class ---;
   - Returns: int indicating the total number of registered classes
 */
 @(link_name="objc_getClassList")
-getClassList :: proc(buffer: ^class, buffer_count: c.int) -> c.int ---;
+getClassList :: proc(buffer: ^class, bufferCount: c.int) -> c.int ---;
+
 
 /*
 	Gets the name of a class as cstring
@@ -415,6 +568,63 @@ ivar_getTypeEncoding :: proc(v: ivar) -> cstring ---;
 	Gets the offset of a ivar inside a class
 */
 ivar_getOffset       :: proc(v: ivar) -> uint ---;
+
+
+/*===========================================================================================*
+	Object
+ *===========================================================================================*/
+
+/*
+  Sets the class of a object and returns the old class
+*/
+object_setClass :: proc(obj: id, cls: class) -> class ---;
+
+/*
+  Getter for class of object
+  - Returns: the class of a object 
+*/
+object_getClass :: proc(obj: id) -> class ---;
+
+/*
+  Get for class name of the object
+*/
+object_getClassName :: proc(obj: id) -> cstring ---;
+
+/*
+  Sets a instance variable to a certain value 
+*/
+object_setIvar :: proc(obj: id, var: ivar, value: id) ---;
+
+/*
+  Gets a ivar of a certain object
+*/
+object_getIvar :: proc(obj: id, var: ivar) -> id ---;
+
+/*
+  This proc returns a ptr to any extra bytes allocated on the id
+*/
+object_getIndexedIvars :: proc(obj: id) -> rawptr ---;
+
+/*
+  Get the value of a instance variable from an object
+*/
+object_getInstanceVariable :: proc(obj: id, name: cstring, outValue: ^rawptr) -> ivar;
+
+/*
+  Set the value of a instance variable from an object
+*/
+object_setInstanceVariable :: proc(obj: id, name: cstring, value: rawptr) -> ivar;
+
+/*
+  Free's the given object returns empty id
+*/
+object_dispose :: proc(obj: id) -> id;
+
+/*
+  Creates a copy of a certain object
+  - Note: this needs to have the size match or be more than the given object
+*/
+object_copy :: proc(obj: id, size: u64) -> id;
 
 }
 

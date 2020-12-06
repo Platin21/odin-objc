@@ -4,12 +4,12 @@ import "core:c"
 import "core:mem"
 
 // type overloads
-id       :: opaque rawptr;
-class    :: opaque rawptr;
-sel      :: opaque rawptr;
-method   :: opaque rawptr;
-protocol :: opaque rawptr;
-property :: opaque rawptr;
+id       :: #opaque rawptr;
+class    :: #opaque rawptr;
+sel      :: #opaque rawptr;
+method   :: #opaque rawptr;
+protocol :: #opaque rawptr;
+property :: #opaque rawptr;
 imp      :: #type proc "c" (obj_id: id , sel: sel, args: u8) -> id;   
 
 method_description :: struct { 

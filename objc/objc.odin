@@ -175,7 +175,7 @@ copyProtocolList :: proc(outCount: ^u32) -> ^protocol ---;
  Getter for protocols
   - Returns: the protocol that is registerd in the runtime with the given name. Or zero if there is no such proto
 */
-@(link_name="objc_getProtocol"");
+@(link_name="objc_getProtocol")
 getProtocol :: proc(name: cstring) -> ^protocol ---;
 
 /*===========================================================================================*

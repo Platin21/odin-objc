@@ -136,14 +136,14 @@ msgSendSuper :: proc(all: rawptr) -> id ---;
   - Returns: all class names of a given library or framework
 */
 @(link_name="objc_copyClassNamesForImage")
-copyClassNamesForImage :: proc(image: cstring, outCount: ^u32) -> ^cstring;
+copyClassNamesForImage :: proc(image: cstring, outCount: ^u32) -> ^cstring ---;
 
 /*
   Method that returns all names of dynamic libraries/frameworks with objc objects
   - Parameter outCount: the amount of library/framework names that where returned
 */
 @(link_name="objc_copyImageNames")
-copyImageNames :: proc(outCount: ^u32) -> ^cstring;
+copyImageNames :: proc(outCount: ^u32) -> ^cstring ---;
 
 
 /*===========================================================================================*
@@ -197,7 +197,7 @@ removeAssociatedObjects :: proc(object: id) ---;
   - Returns: id/object of assosiate 
 */
 @(link_name="objc_getAssociatedObject")
-getAssociatedObject :: proc(object: id, key: rawptr) -> id ----;
+getAssociatedObject :: proc(object: id, key: rawptr) -> id ---;
 
 
 /*
@@ -608,23 +608,23 @@ object_getIndexedIvars :: proc(obj: id) -> rawptr ---;
 /*
   Get the value of a instance variable from an object
 */
-object_getInstanceVariable :: proc(obj: id, name: cstring, outValue: ^rawptr) -> ivar;
+object_getInstanceVariable :: proc(obj: id, name: cstring, outValue: ^rawptr) -> ivar ---;
 
 /*
   Set the value of a instance variable from an object
 */
-object_setInstanceVariable :: proc(obj: id, name: cstring, value: rawptr) -> ivar;
+object_setInstanceVariable :: proc(obj: id, name: cstring, value: rawptr) -> ivar ---;
 
 /*
   Free's the given object returns empty id
 */
-object_dispose :: proc(obj: id) -> id;
+object_dispose :: proc(obj: id) -> id ---;
 
 /*
   Creates a copy of a certain object
   - Note: this needs to have the size match or be more than the given object
 */
-object_copy :: proc(obj: id, size: u64) -> id;
+object_copy :: proc(obj: id, size: u64) -> id ---;
 
 }
 

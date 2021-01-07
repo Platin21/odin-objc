@@ -28,10 +28,6 @@ If that is done one can just include it like that:
 - Making a builder for blocks (unsure wether that is easy todo)
 - Seperating the runtime functions in to there own files (not sure if that makes sense)
 
-### Some rando build batches ###
-
-[![volkswagen status](https://auchenberg.github.io/volkswagen/volkswargen_ci.svg?v=1)](https://github.com/auchenberg/volkswagen)
-
 ### Licence ### 
 
 MIT 

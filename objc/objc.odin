@@ -10,6 +10,7 @@ sel      :: opaque rawptr;
 method   :: opaque rawptr;
 protocol :: opaque rawptr;
 property :: opaque rawptr;
+// - Note: Don't call anything with imp directly such a call is UB in objc, just cast it to the correct signature
 imp      :: #type proc "c" (obj_id: id , sel: sel, args: u8) -> id;   
 
 method_description :: struct { 

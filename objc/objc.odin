@@ -4,12 +4,12 @@ import "core:c"
 import "core:mem"
 
 // type overloads
-id       :: opaque rawptr;
-class    :: opaque rawptr;
-sel      :: opaque rawptr;
-method   :: opaque rawptr;
-protocol :: opaque rawptr;
-property :: opaque rawptr;
+id       :: distinct rawptr;
+class    :: distinct rawptr;
+sel      :: distinct rawptr;
+method   :: distinct rawptr;
+protocol :: distinct rawptr;
+property :: distinct rawptr;
 // - Note: Don't call anything with imp directly such a call is UB in objc, just cast it to the correct signature
 imp      :: #type proc "c" (obj_id: id , sel: sel, args: u8) -> id;   
 

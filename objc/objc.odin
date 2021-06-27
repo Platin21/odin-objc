@@ -244,7 +244,17 @@ lookUpClass :: proc(name: cstring) -> class ---;
 @(link_name="objc_copyClassList")
 copyClassList :: proc(outCount: ^u32) -> ^class ---;
 
+/*
+	- Note: Creates a new class template at runtime 
+*/
+@(link_name="objc_allocateClassPair")
+allocateClassPair :: proc(parent: class, name: cstring, extra_bytes: u64) -> class ---;
 
+@(link_name="objc_registerClassPair")
+registerClassPair :: proc(cls: class) ---;
+
+@(link_name="objc_disposeClassPair")
+disposeClassPair :: proc(cls: Class) ---;
 
 /*===========================================================================================*
 	Selector
@@ -375,6 +385,54 @@ class_createInstance :: proc(class_obj: class, extra_bytes: c.int) -> id ---;
 	- Parameter class_obj: The class you are inquiring about.
 */
 class_getImageName :: proc(class_obj: class) -> cstring ---;
+
+/*
+	TODO(Platin): add description 
+*/
+class_addIvar :: proc(cls: class, name: cstring, size: u64, alignment: u8, types: cstring) -> bool ---;
+
+
+/*
+	Describes the instance variables declared by a class.
+*/
+class_copyIvarList :: proc() ---;
+
+/*
+	Returns a description of the Ivar layout for a given class.
+*/
+class_getIvarLayout :: proc() ---;
+
+/*
+	Sets the Ivar layout for a given class.
+*/
+class_setIvarLayout :: proc() ---;
+
+/*
+	Returns a description of the layout of weak Ivars for a given class.
+*/
+class_getWeakIvarLayout :: proc() ---;
+
+/*
+	Sets the layout for weak Ivars for a given class.
+*/
+class_setWeakIvarLayout :: proc() ---;
+
+
+/*
+	Returns a property with a given name of a given class.
+*/
+class_getProperty :: proc() ---;
+
+
+/*
+	Describes the properties declared by a class
+*/
+class_copyPropertyList  :: proc(cls: class, outCount: ^uint) -> ^property;
+
+/*
+	Adds a new method to a class with a given name and implementation.
+*/
+class_addMethod :: proc() ---;
 
 /*
 	In place constructs a class and registers it in the runtime

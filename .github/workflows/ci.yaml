@@ -31,5 +31,5 @@ jobs:
       run: |
         cd Odin
         make release
-    - name: test odin-objc
+    - name: Run tests
       run: ./Odin/odin test tests/test.odin

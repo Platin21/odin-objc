@@ -15,12 +15,12 @@ imp      :: #type proc "c" (obj_id: id , sel: sel, args: u8) -> id;
 
 method_description :: struct { 
 	name: sel,
-	types: cstring
+	types: cstring,
 };
 
 property_attribute :: struct {
 	name: cstring,
-	value: cstring
+	value: cstring,
 };
 
 YES   :: true;
@@ -85,7 +85,7 @@ AssociationPolicy :: enum uintptr {
   OBJC_ASSOCIATION_COPY = 01403,
  
   /* Specifies a strong reference to the associated object, and that the association is made atomically. */
-  OBJC_ASSOCIATION_RETAIN = 01401
+  OBJC_ASSOCIATION_RETAIN = 01401,
 }
 
 

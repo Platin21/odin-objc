@@ -14,7 +14,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  build_macOS:
+  macOS:
     runs-on: macos-latest
     timeout-minutes: 15
     steps:
@@ -27,11 +27,9 @@ jobs:
         echo "CPATH=$TMP_PATH" >> $GITHUB_ENV
     - name: Download Odin
       run: git clone https://github.com/odin-lang/Odin
-    - name: Build Odin
+    - name: build Odin
       run: |
         cd Odin
         make release
-    - name: Build odin-objc
-      run: |
-        ls -l 
-        ./Odin/odin test tests/test.odin
+    - name: test odin-objc
+      run: ./Odin/odin test tests/test.odin

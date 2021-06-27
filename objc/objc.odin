@@ -254,7 +254,7 @@ allocateClassPair :: proc(parent: class, name: cstring, extra_bytes: u64) -> cla
 registerClassPair :: proc(cls: class) ---;
 
 @(link_name="objc_disposeClassPair")
-disposeClassPair :: proc(cls: Class) ---;
+disposeClassPair :: proc(cls: class) ---;
 
 /*===========================================================================================*
 	Selector
@@ -427,7 +427,7 @@ class_getProperty :: proc() ---;
 /*
 	Describes the properties declared by a class
 */
-class_copyPropertyList  :: proc(cls: class, outCount: ^uint) -> ^property;
+class_copyPropertyList  :: proc(cls: class, outCount: ^uint) -> ^property ---;
 
 /*
 	Adds a new method to a class with a given name and implementation.

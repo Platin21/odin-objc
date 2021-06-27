@@ -412,7 +412,7 @@ class_copyIvarList :: proc(cls: class, outCount: ^u32) -> ^ivar ---;
 /*
 	Returns a description of the Ivar layout for a given class.
 */
-class_getIvarLayout :: proc(cls: Class) -> ^u8 ---;
+class_getIvarLayout :: proc(cls: class) -> ^u8 ---;
 
 /*
 	Sets the Ivar layout for a given class.

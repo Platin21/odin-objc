@@ -251,7 +251,7 @@ lookUpClass :: proc(name: cstring) -> class ---;
 copyClassList :: proc(outCount: ^u32) -> ^class ---;
 
 /*
-	- Note: Creates a new class template at runtime 
+	Creates a new class template at runtime 
 */
 @(link_name="objc_allocateClassPair")
 allocateClassPair :: proc(parent: class, name: cstring, extra_bytes: c.uint) -> class ---;

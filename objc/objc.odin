@@ -3,6 +3,8 @@ package objc;
 import "core:c"
 import "core:mem"
 
+VERSION :: "1.2.0";
+
 // type overloads
 id       :: distinct rawptr;
 class    :: distinct rawptr;
@@ -252,7 +254,7 @@ copyClassList :: proc(outCount: ^u32) -> ^class ---;
 	- Note: Creates a new class template at runtime 
 */
 @(link_name="objc_allocateClassPair")
-allocateClassPair :: proc(parent: class, name: cstring, extra_bytes: u64) -> class ---;
+allocateClassPair :: proc(parent: class, name: cstring, extra_bytes: c.uint) -> class ---;
 
 @(link_name="objc_registerClassPair")
 registerClassPair :: proc(cls: class) ---;

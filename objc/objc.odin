@@ -733,6 +733,20 @@ create_class_with_name :: proc(class_name: cstring, allocator := context.allocat
 	return  constructInstance(objc_class, instance_memory);
 }
 
+create_class_definition :: proc(class_name: cstring, extra_bytes : c.uint = 0) -> class {
+	ns_object := getClass("NSObject");
+	return allocateClassPair(ns_object, class_name, extra_bytes);
+}
+
+create_class_definition_with_parent_class :: proc(class_name: cstring, class_parent: class, extra_bytes : c.uint = 0) -> class {
+	return allocateClassPair(class_parent, class_name, extra_bytes);
+}
+
+create_class_definition_with_parent :: proc(class_name: cstring, class_name_parent: cstring, extra_bytes : c.uint = 0) -> class {
+	cls := getClass(class_name_parent);
+	return allocateClassPair(cls, class_name, extra_bytes);
+}
+
 destroy_class_instance :: proc(obj: id, allocator := context.allocator) {
 	instance_memory :=  destructInstance(obj);
 	free(instance_memory, allocator);

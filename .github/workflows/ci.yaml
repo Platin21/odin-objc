@@ -1,0 +1,35 @@
+# This is a basic workflow to help you get started with Actions
+
+name: CI
+
+# Controls when the action will run. 
+on:
+  # Triggers the workflow on push or pull request events but only for the master branch
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+jobs:
+  build_macOS:
+    runs-on: macos-latest
+    timeout-minutes: 15
+    steps:
+    - uses: actions/checkout@v1
+    - name: Download LLVM and setup PATH
+      run: |
+        brew install llvm@11
+        echo "/usr/local/opt/llvm@11/bin" >> $GITHUB_PATH
+        TMP_PATH=$(xcrun --show-sdk-path)/user/include
+        echo "CPATH=$TMP_PATH" >> $GITHUB_ENV
+    - name: Download Odin
+      run: git clone https://github.com/odin-lang/Odin
+    - name: Build Odin
+      run: |
+        cd Odin
+        make release
+    - name: Build odin-objc
+      run: odin test tests/test.odin

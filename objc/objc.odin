@@ -256,9 +256,15 @@ copyClassList :: proc(outCount: ^u32) -> ^class ---;
 @(link_name="objc_allocateClassPair")
 allocateClassPair :: proc(parent: class, name: cstring, extra_bytes: c.uint) -> class ---;
 
+/*
+	Registers class in the global class registry
+*/
 @(link_name="objc_registerClassPair")
 registerClassPair :: proc(cls: class) ---;
 
+/*
+	Removes class from global class registry
+*/
 @(link_name="objc_disposeClassPair")
 disposeClassPair :: proc(cls: class) ---;
 

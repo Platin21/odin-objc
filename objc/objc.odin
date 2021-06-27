@@ -10,6 +10,7 @@ sel      :: distinct rawptr;
 method   :: distinct rawptr;
 protocol :: distinct rawptr;
 property :: distinct rawptr;
+
 // - Note: Don't call anything with imp directly such a call is UB in objc, just cast it to the correct signature
 imp      :: #type proc "c" (obj_id: id , sel: sel, args: u8) -> id;   
 
@@ -23,11 +24,13 @@ property_attribute :: struct {
 	value: cstring,
 };
 
+
 YES   :: true;
 NO    :: false;
 
 /*
 	Some addtional information about type encoding:
+	/*
 	=> c = i8
   => i = i32
 	=> s = i16
@@ -52,6 +55,7 @@ NO    :: false;
 	=> b<num>   = bitfield of num bits
 	=> ^type    = pointer of T
 	=> ?        = unknown type / function pointers
+	*/
 
 	Method encoding:
 	=> r = const
@@ -371,6 +375,15 @@ class_getClassVariable :: proc(class_obj : class, name : cstring) -> ivar ---;
 class_getMethodImplementation :: proc(class_obj: class, selector: sel) -> imp ---;
 
 /*
+	Gets the c function pointer from the objc class
+	
+	- Parameter class_obj: the class object from objc
+	- Parameter selector: the selector which you want to get the c function for.
+	- Returns: objc imp aka the c funtion pointer
+*/
+class_getMethodImplementation_stret :: proc(class_obj: class, selector: sel) -> imp ---;
+
+/*
 	Creates a instance of a class with the default heap allocator
 
 	- Parameter class_obj: the objc class you want to create on the heap
@@ -387,41 +400,55 @@ class_createInstance :: proc(class_obj: class, extra_bytes: c.int) -> id ---;
 class_getImageName :: proc(class_obj: class) -> cstring ---;
 
 /*
-	TODO(Platin): add description 
+	Adds a new instance variable to a class.
 */
 class_addIvar :: proc(cls: class, name: cstring, size: u64, alignment: u8, types: cstring) -> bool ---;
-
 
 /*
 	Describes the instance variables declared by a class.
 */
-class_copyIvarList :: proc() ---;
+class_copyIvarList :: proc(cls: class, outCount: ^u32) -> ^ivar ---;
 
 /*
 	Returns a description of the Ivar layout for a given class.
 */
-class_getIvarLayout :: proc() ---;
+class_getIvarLayout :: proc(cls: Class) -> ^u8 ---;
 
 /*
 	Sets the Ivar layout for a given class.
 */
-class_setIvarLayout :: proc() ---;
+class_setIvarLayout :: proc(cls: class, layout: ^u8) ---;
 
 /*
 	Returns a description of the layout of weak Ivars for a given class.
 */
-class_getWeakIvarLayout :: proc() ---;
+class_getWeakIvarLayout :: proc(cls: class) -> ^u8 ---;
 
 /*
 	Sets the layout for weak Ivars for a given class.
 */
-class_setWeakIvarLayout :: proc() ---;
-
+class_setWeakIvarLayout :: proc(cls: class, layout: ^u8) ---;
 
 /*
 	Returns a property with a given name of a given class.
 */
-class_getProperty :: proc() ---;
+class_getProperty :: proc(cls: class, name: cstring) -> property ---;
+
+/*
+	Returns a Boolean value that indicates whether instances of a class respond to a particular selector.
+*/
+class_respondsToSelector :: proc(cls: class, sel: sel) -> bool ---;
+
+/*
+	Adds a protocol to a class.
+*/
+class_addProtocol :: proc(cls: class, protocol: ^protocol) -> bool ---;
+
+
+/*
+	Adds a property to a class.
+*/
+class_addProperty :: proc (cls: class, name: cstring, attributes: ^property_attribute, attributeCount: uint) -> bool ---;
 
 
 /*
@@ -432,7 +459,7 @@ class_copyPropertyList  :: proc(cls: class, outCount: ^uint) -> ^property ---;
 /*
 	Adds a new method to a class with a given name and implementation.
 */
-class_addMethod :: proc() ---;
+class_addMethod :: proc(cls: class, name: sel, imp: imp, types: cstring) -> bool ---;
 
 /*
 	In place constructs a class and registers it in the runtime

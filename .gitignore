@@ -2,4 +2,4 @@
 *.ll
 *.o
 main
-tests/test
+test

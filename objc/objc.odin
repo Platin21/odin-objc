@@ -753,6 +753,10 @@ create_class_definition_with_parent :: proc(class_name: cstring, class_name_pare
 	return allocateClassPair(cls, class_name, extra_bytes);
 }
 
+create_selector_for_name :: proc(selector_name: cstring) -> sel {
+	return sel_registerName(selector_name);
+}
+
 destroy_class_instance :: proc(obj: id, allocator := context.allocator) {
 	instance_memory :=  destructInstance(obj);
 	free(instance_memory, allocator);
@@ -775,3 +779,4 @@ class_with_name_get_method_implementation_of_selector :: proc(class_name: cstrin
 class_with_name_get_method_implementation_of_name :: proc(class_name: cstring, method_name: cstring) -> imp {
 	return class_getMethodImplementation( getClass(class_name), sel_registerName(method_name));
 }
+
